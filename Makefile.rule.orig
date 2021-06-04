@@ -3,7 +3,7 @@
 #
 
 # This library's version
-VERSION = 0.3.14.dev
+VERSION = 0.3.15.dev
 
 # If you set the suffix, the library name will be libopenblas_$(LIBNAMESUFFIX).a
 # and libopenblas_$(LIBNAMESUFFIX).so. Meanwhile, the soname in shared library
@@ -50,7 +50,7 @@ VERSION = 0.3.14.dev
 # If you need 32bit binary, define BINARY=32, otherwise define BINARY=64
 # Please note that AVX is not available on 32-bit.
 # Setting BINARY=32 disables AVX/AVX2/AVX-512.
-#BINARY=64
+# BINARY=64
 
 # About threaded BLAS. It will be automatically detected if you don't
 # specify it.
@@ -117,7 +117,7 @@ VERSION = 0.3.14.dev
 
 # If you only want the CBLAS interface without installing a Fortran compiler,
 # please comment this in.
-#ONLY_CBLAS = 1
+# ONLY_CBLAS = 1
 
 # If you don't need LAPACK, please comment this in.
 # If you set NO_LAPACK=1, the build system automatically sets NO_LAPACKE=1.
@@ -177,7 +177,7 @@ NO_AFFINITY = 1
 # NO_AVX512 = 1
 
 # Don't use parallel make.
-#NO_PARALLEL_MAKE = 1
+# NO_PARALLEL_MAKE = 1
 
 # Force number of make jobs. The default is the number of logical CPU of the host.
 # This is particularly useful when using distcc.
@@ -223,7 +223,7 @@ NO_AFFINITY = 1
 # SANITY_CHECK = 1
 
 # The installation directory.
-#PREFIX = /opt/OpenBLAS
+# PREFIX = /opt/OpenBLAS
 
 # Common Optimization Flag;
 # The default -O2 is enough.
@@ -239,7 +239,7 @@ NO_AFFINITY = 1
 COMMON_PROF = -pg
 
 # Build Debug version
-DEBUG = 1
+# DEBUG = 1
 
 # Set maximum stack allocation.
 # The default value is 2048. 0 disable stack allocation a may reduce GER and GEMV

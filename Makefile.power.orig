@@ -11,10 +11,8 @@ endif
 
 ifeq ($(CORE), POWER10)
 ifneq ($(C_COMPILER), PGI)
-#CCOMMON_OPT += -Ofast -mcpu=power10 -mtune=power10 -mvsx -fno-fast-math
-#FCOMMON_OPT += -O2 -frecursive -mcpu=power10 -mtune=power10  -fno-fast-math
-CCOMMON_OPT += -Og -mcpu=power10 -mtune=power10 -mvsx -fno-fast-math
-FCOMMON_OPT += -Og -frecursive -mcpu=power10 -mtune=power10  -fno-fast-math
+CCOMMON_OPT += -Ofast -mcpu=power10 -mtune=power10 -mvsx -fno-fast-math
+FCOMMON_OPT += -O2 -frecursive -mcpu=power10 -mtune=power10  -fno-fast-math
 endif
 endif
 
