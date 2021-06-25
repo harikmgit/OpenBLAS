@@ -47,12 +47,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if defined(DOUBLE)
 #include "zscal_microk_power10.c"
 #else
-
-#if 0
-IBM
 #include "cscal_microk_power10.c"
-#endif
-
 #endif
 #endif
 #endif
