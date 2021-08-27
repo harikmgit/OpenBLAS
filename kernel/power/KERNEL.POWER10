@@ -1,6 +1,6 @@
-ifeq ($(__BYTE_ORDER__),__ORDER_BIG_ENDIAN__)
-include $(KERNELDIR)/KERNEL.POWER8
-else
+#ifeq ($(__BYTE_ORDER__),__ORDER_BIG_ENDIAN__)
+#include $(KERNELDIR)/KERNEL.POWER8
+#else
 
 #SGEMM_BETA = ../generic/gemm_beta.c
 #DGEMM_BETA = ../generic/gemm_beta.c
@@ -19,9 +19,12 @@ SBGEMMONCOPYOBJ =  sbgemm_oncopy$(TSUFFIX).$(SUFFIX)
 SBGEMMOTCOPYOBJ =  sbgemm_otcopy$(TSUFFIX).$(SUFFIX)
 
 STRMMKERNEL	= sgemm_kernel_power10.c
+#DTRMMKERNEL	= dtrmm_kernel_16x4_power8.S 
 DTRMMKERNEL	= dgemm_kernel_power10.c
-CTRMMKERNEL	= cgemm_kernel_power10.S
-ZTRMMKERNEL	= zgemm_kernel_power10.S
+#CTRMMKERNEL	= cgemm_kernel_power10_aix.S
+CTRMMKERNEL	= ctrmm_kernel_8x4_power8.S
+#ZTRMMKERNEL	= zgemm_kernel_power10.S
+ZTRMMKERNEL    = ztrmm_kernel_8x2_power8.S
 
 SGEMMKERNEL    =  sgemm_kernel_power10.c
 SGEMMINCOPY    = ../generic/gemm_ncopy_16.c
@@ -43,7 +46,19 @@ DGEMMITCOPYOBJ =
 DGEMMONCOPYOBJ =  dgemm_oncopy$(TSUFFIX).$(SUFFIX)
 DGEMMOTCOPYOBJ =  dgemm_otcopy$(TSUFFIX).$(SUFFIX)
 
+#DGEMMKERNEL    =  dgemm_kernel_16x4_power8.S
+#DGEMMKERNEL        = dgemm_kernel_power10.c
+#DGEMMINCOPY    = ../generic/gemm_ncopy_16.c
+#DGEMMITCOPY    =  dgemm_tcopy_16_power8.S
+#DGEMMONCOPY    =  dgemm_ncopy_4_power8.S
+#DGEMMOTCOPY    =  ../generic/gemm_tcopy_4.c
+#DGEMMINCOPYOBJ =  dgemm_incopy$(TSUFFIX).$(SUFFIX)
+#DGEMMITCOPYOBJ =  dgemm_itcopy$(TSUFFIX).$(SUFFIX)
+#DGEMMONCOPYOBJ =  dgemm_oncopy$(TSUFFIX).$(SUFFIX)
+#DGEMMOTCOPYOBJ =  dgemm_otcopy$(TSUFFIX).$(SUFFIX)
+
 CGEMMKERNEL    = cgemm_kernel_power10.S
+#CGEMMKERNEL    = cgemm_kernel_8x4_power8.S
 CGEMMINCOPY    = ../generic/zgemm_ncopy_8.c
 CGEMMITCOPY    = ../generic/zgemm_tcopy_8.c
 CGEMMONCOPY    = ../generic/zgemm_ncopy_4.c
@@ -53,7 +68,8 @@ CGEMMOTCOPYOBJ =  cgemm_otcopy$(TSUFFIX).$(SUFFIX)
 CGEMMINCOPYOBJ =  cgemm_incopy$(TSUFFIX).$(SUFFIX)
 CGEMMITCOPYOBJ =  cgemm_itcopy$(TSUFFIX).$(SUFFIX)
 
-ZGEMMKERNEL    = zgemm_kernel_power10.S
+#ZGEMMKERNEL    = zgemm_kernel_power10.S
+ZGEMMKERNEL    = zgemm_kernel_8x2_power8.S
 ZGEMMONCOPY    = ../generic/zgemm_ncopy_2.c
 ZGEMMOTCOPY    = ../generic/zgemm_tcopy_2.c
 ZGEMMINCOPY    = ../generic/zgemm_ncopy_8.c
@@ -68,10 +84,20 @@ STRSMKERNEL_LT	= trsm_kernel_LT_power10.c
 STRSMKERNEL_RN	= trsm_kernel_RN_power10.c
 STRSMKERNEL_RT	= trsm_kernel_RT_power10.c
 
+#STRSMKERNEL_LN  =  ../generic/trsm_kernel_LN.c
+#STRSMKERNEL_LT  =  ../generic/trsm_kernel_LT.c
+#STRSMKERNEL_RN  =  ../generic/trsm_kernel_RN.c
+#STRSMKERNEL_RT  =  ../generic/trsm_kernel_RT.c
+
 DTRSMKERNEL_LN	= trsm_kernel_LN_power10.c
 DTRSMKERNEL_LT	= trsm_kernel_LT_power10.c
 DTRSMKERNEL_RN	= trsm_kernel_RN_power10.c
 DTRSMKERNEL_RT	= trsm_kernel_RT_power10.c
+
+#DTRSMKERNEL_LN  = ../generic/trsm_kernel_LN.c
+#DTRSMKERNEL_LT  = dtrsm_kernel_LT_16x4_power8.S
+#DTRSMKERNEL_RN  = ../generic/trsm_kernel_RN.c
+#DTRSMKERNEL_RT  = ../generic/trsm_kernel_RT.c
 
 CTRSMKERNEL_LN	= ../generic/trsm_kernel_LN.c
 CTRSMKERNEL_LT	= ../generic/trsm_kernel_LT.c
@@ -142,14 +168,22 @@ CASUMKERNEL  = casum.c
 ZASUMKERNEL  = zasum.c
 #
 SAXPYKERNEL  = saxpy_power10.c
+#SAXPYKERNEL	= saxpy.c
 DAXPYKERNEL  = daxpy_power10.c
+#DAXPYKERNEL	= daxpy.c
 CAXPYKERNEL  = caxpy_power10.c
+#CAXPYKERNEL = caxpy.c
 ZAXPYKERNEL  = zaxpy_power10.c
+#ZAXPYKERNEL	= zaxpy.c
 #
 SCOPYKERNEL  = scopy_power10.c
+#SCOPYKERNEL	= scopy.c
 DCOPYKERNEL  = dcopy_power10.c
+#DCOPYKERNEL	= dcopy.c
 CCOPYKERNEL  = ccopy_power10.c
+#CCOPYKERNEL	= ccopy.c
 ZCOPYKERNEL  = zcopy_power10.c
+#ZCOPYKERNEL  = zcopy.c
 #
 SDOTKERNEL   =  sdot_power10.c
 DDOTKERNEL   =  ddot_power10.c
@@ -185,11 +219,13 @@ ZSWAPKERNEL  = zswap.c
 
 SGEMVNKERNEL = sgemv_n.c
 DGEMVNKERNEL = dgemv_n_power10.c
+#DGEMVNKERNEL	= dgemv_n.c
 CGEMVNKERNEL = cgemv_n.c
 ZGEMVNKERNEL =  zgemv_n_power10.c
 #
 SGEMVTKERNEL = sgemv_t.c
 DGEMVTKERNEL = dgemv_t_power10.c
+#DGEMVTKERNEL	= dgemv_t.c
 CGEMVTKERNEL = cgemv_t.c
 ZGEMVTKERNEL = zgemv_t_4.c
 
@@ -219,4 +255,4 @@ QCABS_KERNEL	= ../generic/cabs.c
 CGEMM3MKERNEL    = ../generic/zgemm3mkernel_dump.c
 ZGEMM3MKERNEL    = ../generic/zgemm3mkernel_dump.c
 
-endif
+#endif

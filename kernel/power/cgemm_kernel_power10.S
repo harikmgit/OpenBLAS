@@ -76,12 +76,36 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "cgemm_macros_power10.S"
 
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 .equ    perm_const1, 0x0405060700010203
 .equ    perm_const2, 0x0c0d0e0f08090a0b
 .equ save_permute_12, 0x0c0d0e0f1c1d1e1f
 .equ save_permute_11, 0x0405060714151617
+#else 	/* #if defined(POWER10) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
+.set    perm_const1, 0x0405060700010203
+.set    perm_const2, 0x0c0d0e0f08090a0b
+#if 0
+HARI HALF PROVED 
+.set save_permute_12, 0x0c0d0e0f1c1d1e1f   	/* Answer swapped */
+.set save_permute_11, 0x0405060714151617	/* Answer swapped */
+#endif
+#if 0
+.set save_permute_12, 0x1c1d1e1f0c0d0e0f  /* HARI excellent code compared to "HARI HALF PROVED" */
+.set save_permute_11, 0x1415161704050607  /* HARI excellent code compared to "HARI HALF PROVED" */
 
+.set save_permute_12, 0x18191a1b08090a0b /* HARI hari_test_cblas_cgemm_small passed but others failing Fail : 3973 */
+.set save_permute_11, 0x1011121300010203 /* HARI hari_test_cblas_cgemm_small passed but others failing */
+#endif
+#if 0
+HARI GOOD CODE 
+.set save_permute_12, 0x1011121300010203 /* HARI hari_test_cblas_cgemm_small passed but others failing */
+.set save_permute_11, 0x18191a1b08090a0b /* HARI hari_test_cblas_cgemm_small passed but others failing */
+#endif
 
+.set save_permute_12, 0x1011121300010203 /* HARI hari_test_cblas_cgemm_small passed but others failing */
+.set save_permute_11, 0x18191a1b08090a0b /* HARI hari_test_cblas_cgemm_small passed but others failing */
+#endif
+/* HARI NEW CODE STOP */
 
 #ifndef NEEDPARAM
 
@@ -173,16 +197,16 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   uint128 = 0xc0d0e0f08090a0b0405060700010203
 */ 
 		
-	lis T2, perm_const2@highest
-	lis T1, perm_const1@highest
-	lis T3, save_permute_12@highest
-	lis T4, save_permute_11@highest
+	lis T2, (perm_const2>>48 & 0xFFFF)
+	lis T1, (perm_const1>>48 & 0xFFFF)
+	lis T3, (save_permute_12>>48 & 0xFFFF)
+	lis T4, (save_permute_11>>48 & 0xFFFF)
 
 	
-	ori T2, T2, perm_const2@higher
-	ori T1, T1, perm_const1@higher
-	ori T3, T3, save_permute_12@higher
-	ori T4, T4, save_permute_11@higher
+	ori T2, T2, (perm_const2>>32 & 0xFFFF)
+	ori T1, T1, (perm_const1>>32 & 0xFFFF)
+	ori T3, T3, (save_permute_12>>32 & 0xFFFF)
+	ori T4, T4, (save_permute_11>>32 & 0xFFFF)
 
 	
 	rldicr T2, T2, 32, 31
@@ -190,16 +214,16 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	rldicr T3, T3, 32, 31
 	rldicr T4, T4, 32, 31 
 
-	oris T2, T2, perm_const2@h
-	oris T1, T1, perm_const1@h
-	oris T3, T3, save_permute_12@h
-	oris T4, T4, save_permute_11@h
+	oris T2, T2, (perm_const2>>16 & 0xFFFF)
+	oris T1, T1, (perm_const1>>16 & 0xFFFF)
+	oris T3, T3, (save_permute_12>>16 & 0xFFFF)
+	oris T4, T4, (save_permute_11>>16 & 0xFFFF)
 
 	
-	ori T2, T2, perm_const2@l  
-	ori T1, T1, perm_const1@l
-	ori T3, T3, save_permute_12@l  
-	ori T4, T4, save_permute_11@l
+	ori T2, T2, (perm_const2  & 0xFFFF)
+	ori T1, T1, (perm_const1 & 0xFFFF)
+	ori T3, T3, (save_permute_12 &  0xFFFF) 
+	ori T4, T4, (save_permute_11 &  0xFFFF)
 
 	
   li r0,0
@@ -211,12 +235,20 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   xvnegsp alpha_i,alpha_i
 #endif
 
+#if 0
+	HARI Original code 
 	mtvsrdd permute_mask,T2,T1
 	mtvsrdd save_permute_1,T3,T4 	
+#endif
 
-     /*mask is reverse permute so we have to make it inner permute */
- 	xxpermdi	permute_mask,	permute_mask,	permute_mask,2 
+	/* HARI NEW CODE START */
+	mtvsrdd permute_mask,T2,T1
+	mtvsrdd save_permute_1,T3,T4
+	/* HARI NEW CODE STOP */
 
+    /*mask is reverse permute so we have to make it inner permute */
+	xxpermdi	permute_mask,	permute_mask,	permute_mask,2
+	
 #include "cgemm_logic_power10.S"
 
 .L999: 
