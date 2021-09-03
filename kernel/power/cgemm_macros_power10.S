@@ -228,14 +228,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	5, 32, 34
 	xvf32gerpp	4, 33, 34
 #else
-    xvf32gerpp  3, 36, 34					
-    xvf32gerpp  2, 37, 34
-    xvf32gerpp  1, 32, 34
-    xvf32gerpp  0, 33, 34
-    xvf32gerpp  7, 36, 35
-    xvf32gerpp  6, 37, 35
-    xvf32gerpp  5, 32, 35
-    xvf32gerpp  4, 33, 35				
+	xvf32gerpp	3, 36, 34
+	xvf32gerpp	2, 37, 34
+	xvf32gerpp	1, 32, 34
+	xvf32gerpp	0, 33, 34
+	xvf32gerpp	7, 36, 35
+	xvf32gerpp	6, 37, 35
+	xvf32gerpp	5, 32, 35
+	xvf32gerpp	4, 33, 35
 #endif
 .endm
 
@@ -266,6 +266,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .endm
 
 .macro	KERNEL4x8_2	AREG, BREG, OffsetA, OffsetB, Index, IsLast, Complete
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xvf32gerpp	3, 36, 35
 	xvf32gerpp	2, 37, 35
 	xvf32gerpp	1, 32, 35
@@ -274,11 +275,22 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	6, 37, 34
 	xvf32gerpp	5, 32, 34
 	xvf32gerpp	4, 33, 34
+#else
+	xvf32gerpp	3, 36, 34
+	xvf32gerpp	2, 37, 34
+	xvf32gerpp	1, 32, 34
+	xvf32gerpp	0, 33, 34
+	xvf32gerpp	7, 36, 35
+	xvf32gerpp	6, 37, 35
+	xvf32gerpp	5, 32, 35
+	xvf32gerpp	4, 33, 35
+#endif
 .if \Complete==0
 	lxvp	vs34, DISP8(\Index, \OffsetB)(\BREG)
 	lxvp	vs32, DISP16(\Index, 0+\OffsetA)(\AREG)
 	lxvp	vs36, DISP16(\Index, 32+\OffsetA)(\AREG)
 .endif
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xvf32gerpp	3, 42, 39
 	xvf32gerpp	2, 43, 39
 	xvf32gerpp	1, 40, 39
@@ -287,6 +299,17 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	6, 43, 38
 	xvf32gerpp	5, 40, 38
 	xvf32gerpp	4, 41, 38
+#else
+	xvf32gerpp	3, 42, 38
+	xvf32gerpp	2, 43, 38
+	xvf32gerpp	1, 40, 38
+	xvf32gerpp	0, 41, 38
+	xvf32gerpp	7, 42, 39
+	xvf32gerpp	6, 43, 39
+	xvf32gerpp	5, 40, 39
+	xvf32gerpp	4, 41, 39
+#endif
+
 .if \Complete==0
 	lxvp	vs40, DISP16(\Index, 64+\OffsetA)(\AREG)
 	lxvp	vs38, DISP8(\Index, 32+\OffsetB)(\BREG)
@@ -404,16 +427,30 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	RECONSTRUCT_PAIR2
 #ifndef TRMMKERNEL
 	/* add */
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxpermdi	vs1, vs8, vs0, 2
 	xxpermdi	vs3, vs10, vs2, 2
 	xxpermdi	vs5, vs12, vs4, 2
 	xxpermdi	vs7, vs14, vs6, 2
 	xxpermdi	vs9, vs0, vs8, 2
 	xxpermdi	vs11, vs2, vs10, 2
+#else
+	xxpermdi	vs1, vs0, vs8, 1
+	xxpermdi	vs3, vs2, vs10, 1
+	xxpermdi	vs5, vs4, vs12, 1
+	xxpermdi	vs7, vs6, vs14, 1
+	xxpermdi	vs9, vs8, vs0, 1
+	xxpermdi	vs11, vs10, vs2, 1
+#endif
 	xvaddsp	vs24, vs24, vs3
 	xvaddsp	vs25, vs25, vs1
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxpermdi	vs13, vs4, vs12, 2
 	xxpermdi	vs15, vs6, vs14, 2
+#else
+    xxpermdi    vs13, vs12, vs4, 1
+    xxpermdi    vs15, vs14, vs6, 1
+#endif
 	xvaddsp	vs26, vs26, vs7
 	xvaddsp	vs27, vs27, vs5
 	xvaddsp	vs28, vs28, vs11
@@ -454,16 +491,30 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	RECONSTRUCT_PAIR2
 #ifndef TRMMKERNEL
   /* add */
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxpermdi	vs1, vs8, vs0, 2
 	xxpermdi	vs3, vs10, vs2, 2
 	xxpermdi	vs5, vs12, vs4, 2
 	xxpermdi	vs7, vs14, vs6, 2
 	xxpermdi	vs9, vs0, vs8, 2
 	xxpermdi	vs11, vs2, vs10, 2
+#else
+    xxpermdi    vs1, vs0, vs8, 1
+    xxpermdi    vs3, vs2, vs10, 1
+    xxpermdi    vs5, vs4, vs12, 1
+    xxpermdi    vs7, vs6, vs14, 1 
+    xxpermdi    vs9, vs8, vs0, 1
+    xxpermdi    vs11, vs10, vs2, 1
+#endif
 	xvaddsp	vs32, vs32, vs3
 	xvaddsp	vs33, vs33, vs1
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxpermdi	vs13, vs4, vs12, 2
 	xxpermdi	vs15, vs6, vs14, 2
+#else
+	xxpermdi	vs13, vs12, vs4, 1
+	xxpermdi	vs15, vs14, vs6, 1
+#endif
 	xvaddsp	vs40, vs40, vs7
 	xvaddsp vs41, vs41, vs5
 	xvaddsp	vs34, vs34, vs11
@@ -527,10 +578,10 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	1, 32, 35
 	xvf32gerpp	0, 33, 35
 #else
-	xvf32gerpp	3, 32, 35			
+	xvf32gerpp	3, 32, 35
 	xvf32gerpp	2, 33, 35
 	xvf32gerpp	1, 32, 34
-	xvf32gerpp	0, 33, 34			
+	xvf32gerpp	0, 33, 34
 #endif
 .endm
 
@@ -565,10 +616,10 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	1, 32, 35
 	xvf32gerpp	0, 33, 35
 #else
-	xvf32gerpp	3, 32, 35			
+	xvf32gerpp	3, 32, 35
 	xvf32gerpp	2, 33, 35
 	xvf32gerpp	1, 32, 34
-	xvf32gerpp	0, 33, 34		
+	xvf32gerpp	0, 33, 34
 #endif
 
 .if \Complete==0
@@ -581,7 +632,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	1, 36, 39
 	xvf32gerpp	0, 37, 39
 #else
-	xvf32gerpp	3, 36, 39	
+	xvf32gerpp	3, 36, 39
 	xvf32gerpp	2, 37, 39
 	xvf32gerpp	1, 36, 38
 	xvf32gerpp	0, 37, 38
@@ -650,14 +701,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxpermdi	vs13, vs4, vs12, 2
 	xxpermdi	vs15, vs6, vs14, 2
 #else
-    xxpermdi    vs1, vs0, vs8, 1	
+    xxpermdi    vs1, vs0, vs8, 1
     xxpermdi    vs3, vs2, vs10, 1
     xxpermdi    vs9, vs8, vs0, 1
     xxpermdi    vs11, vs10, vs2, 1
     xxpermdi    vs5, vs4, vs12, 1
     xxpermdi    vs7, vs6, vs14, 1
     xxpermdi    vs13, vs12, vs4, 1
-    xxpermdi    vs15, vs14, vs6, 1	
+    xxpermdi    vs15, vs14, vs6, 1
 #endif
 	xvaddsp	vs24, vs24, vs3
 	xvaddsp	vs25, vs25, vs1
@@ -721,8 +772,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	1, 34, 32
 	xvf32gerpp	0, 35, 32
 #else
-    xvf32gerpp  1, 35, 32		
-    xvf32gerpp  0, 34, 32	
+    xvf32gerpp  1, 35, 32
+    xvf32gerpp  0, 34, 32
 #endif
 .endm
 
@@ -754,8 +805,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	1, 34, 33
 	xvf32gerpp	0, 35, 33
 #else
-	xvf32gerpp	1, 35, 32		
-	xvf32gerpp	0, 34, 32	
+	xvf32gerpp	1, 35, 32
+	xvf32gerpp	0, 34, 32
 #endif
 .if \Complete==0
 	lxvp	vs34, DISP8(\Index, 0+\OffsetB)(\BREG)
@@ -764,8 +815,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	1, 36, 32
 	xvf32gerpp	0, 37, 32
 #else
-	xvf32gerpp	1, 37, 33		
-	xvf32gerpp	0, 36, 33	
+	xvf32gerpp	1, 37, 33
+	xvf32gerpp	0, 36, 33
 #endif
 .if \Complete==0
 	lxvp	vs32, DISP4(\Index, \OffsetA)(\AREG)
@@ -823,9 +874,9 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxpermdi	vs3, vs0, vs8, 3
 	xxpermdi	vs11, vs2, vs10, 3
 #else
-    xxpermdi    vs1, vs0, vs8, 0			
-    xxpermdi    vs9, vs2, vs10, 0		
-    xxpermdi    vs3, vs8, vs0, 3	
+    xxpermdi    vs1, vs0, vs8, 0
+    xxpermdi    vs9, vs2, vs10, 0
+    xxpermdi    vs3, vs8, vs0, 3
     xxpermdi    vs11, vs10, vs2, 3
 #endif
 	xvaddsp	vs24, vs24, vs1
@@ -882,9 +933,9 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xvf32gerpp	    0, 35, 32
 	xvf32gerpp	    1, 34, 32
-#else /* #if defined(POWER10) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
-	xvf32gerpp      0, 34, 32		
-	xvf32gerpp      1, 35, 32	
+#else
+	xvf32gerpp      0, 34, 32
+	xvf32gerpp      1, 35, 32
 #endif
 .endm
 
@@ -899,8 +950,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxpermdi        vs33, vs32, vs38, 0
 	xxpermdi        vs32, vs32, vs38, 2
 #else
-	xxpermdi        vs33, vs32, vs38, 2		
-    xxpermdi        vs32, vs32, vs38, 0	
+	xxpermdi        vs33, vs32, vs38, 2
+    xxpermdi        vs32, vs32, vs38, 0
 #endif
 	lxvp	vs34, (0+\OffsetB)(BO)
 	lxvp	vs36, (32+\OffsetB)(BO)
@@ -924,7 +975,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	    0, 35, 32
 	xvf32gerpp	    1, 34, 32
 #else
-	xvf32gerpp	    0, 34, 32	
+	xvf32gerpp	    0, 34, 32
 	xvf32gerpp	    1, 35, 32
 #endif
 
@@ -935,7 +986,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	    0, 37, 33
 	xvf32gerpp	    1, 36, 33
 #else
-    xvf32gerpp      0, 36, 33	
+    xvf32gerpp      0, 36, 33
     xvf32gerpp      1, 37, 33
 #endif
 .if \Complete==0
@@ -1095,36 +1146,32 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .endm
 
 .macro	KERNEL2x8_2  AREG, BREG, OffsetA, OffsetB, Index, IsLast, Complete
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xvf32gerpp	2, 37, 35
 	xvf32gerpp	3, 36, 35
 	xvf32gerpp	0, 33, 35
 	xvf32gerpp	1, 32, 35
-#if 0
-#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 #else
-    xvf32gerpp  2, 36, 35	
-    xvf32gerpp  3, 37, 35
-    xvf32gerpp  0, 32, 35
-    xvf32gerpp  1, 33, 35
+	xvf32gerpp	2, 37, 34
+	xvf32gerpp	3, 36, 34
+	xvf32gerpp	0, 33, 34
+	xvf32gerpp	1, 32, 34
 #endif
-#endif /* #if 0 */
 
 .if \Complete==0
 	lxvp	vs32, DISP16(\Index, 0+\OffsetA)(\AREG)
 	lxvp	vs36, DISP16(\Index, 32+\OffsetA)(\AREG)
 .endif
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xvf32gerpp	2, 41, 34
 	xvf32gerpp	3, 40, 34
 	xvf32gerpp	0, 39, 34
 	xvf32gerpp	1, 38, 34
-#if 0
-#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 #else
-    xvf32gerpp  2, 40, 34
-    xvf32gerpp  3, 41, 34
-    xvf32gerpp  0, 38, 34
-    xvf32gerpp  1, 39, 34
-#endif
+	xvf32gerpp	2, 41, 35
+	xvf32gerpp	3, 40, 35
+	xvf32gerpp	0, 39, 35
+	xvf32gerpp	1, 38, 35
 #endif
 
 .if \Complete==0
@@ -1180,16 +1227,30 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	RECONSTRUCT_PAIR2
 #ifndef TRMMKERNEL
   /* add */
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxpermdi	vs1, vs8, vs0, 2
 	xxpermdi	vs3, vs10, vs2, 2
 	xxpermdi	vs5, vs12, vs4, 2
 	xxpermdi	vs7, vs14, vs6, 2
 	xxpermdi	vs9, vs0, vs8, 2
 	xxpermdi	vs11, vs2, vs10, 2
+#else
+	xxpermdi	vs1, vs0, vs8, 1
+	xxpermdi	vs3, vs2, vs10, 1
+	xxpermdi	vs5, vs4, vs12, 1
+	xxpermdi	vs7, vs6, vs14, 1
+	xxpermdi	vs9, vs8, vs0, 1
+	xxpermdi	vs11, vs10, vs2, 1
+#endif
 	xvaddsp	vs24, vs24, vs3
 	xvaddsp	vs25, vs25, vs1
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxpermdi	vs13, vs4, vs12, 2
 	xxpermdi	vs15, vs6, vs14, 2
+#else
+	xxpermdi	vs13, vs12, vs4, 1
+	xxpermdi	vs15, vs14, vs6, 1
+#endif
 	xvaddsp	vs26, vs26, vs7
 	xvaddsp	vs27, vs27, vs5
 	xvaddsp	vs28, vs28, vs11
@@ -1245,8 +1306,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .if \OffsetA != 0
 	addi  \AREG, \AREG, \OffsetA
 .endif
-	xvf32gerpp	0, 33, 34			
-	xvf32gerpp	1, 32, 34		
+	xvf32gerpp	0, 33, 34
+	xvf32gerpp	1, 32, 34
 .endm
 
 .macro	LOAD2x4_2
@@ -1277,8 +1338,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	0, 33, 35
 	xvf32gerpp	1, 32, 35
 #else
-	xvf32gerpp  0, 33, 34		
-	xvf32gerpp  1, 32, 34	
+	xvf32gerpp  0, 33, 34
+	xvf32gerpp  1, 32, 34
 #endif
 
 .if \Complete==0
@@ -1288,8 +1349,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	0, 37, 34
 	xvf32gerpp	1, 36, 34
 #else
-	xvf32gerpp  0, 37, 35		
-	xvf32gerpp  1, 36, 35	
+	xvf32gerpp  0, 37, 35
+	xvf32gerpp  1, 36, 35
 #endif
 
 .if \Complete==0
@@ -1336,10 +1397,10 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxpermdi	vs9, vs0, vs8, 2
 	xxpermdi	vs11, vs2, vs10, 2
 #else /* #if defined(POWER10) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
-	xxpermdi	vs1, vs0, vs8, 1	
-	xxpermdi	vs3, vs2, vs10, 1  
-	xxpermdi	vs9, vs8, vs0, 1 
-	xxpermdi	vs11, vs10, vs2, 1 
+	xxpermdi	vs1, vs0, vs8, 1
+	xxpermdi	vs3, vs2, vs10, 1
+	xxpermdi	vs9, vs8, vs0, 1
+	xxpermdi	vs11, vs10, vs2, 1
 #endif
 
 	xvaddsp	vs24, vs24, vs3
@@ -1415,8 +1476,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .endm
 
 .macro	KERNEL2x2_2  AREG, BREG, OffsetA, OffsetB, Index, IsLast, Complete
-	xvf32gerpp	0, 34, 32		
-	xvf32gerpp	0, 35, 33	
+	xvf32gerpp	0, 34, 32
+	xvf32gerpp	0, 35, 33
 .if \Complete==0
 	lxvp	vs32, DISP4(\Index, \OffsetA)(\AREG)
 	lxvp	vs34, DISP4(\Index, \OffsetA)(\BREG)
@@ -1466,8 +1527,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxpermdi	vs1, vs8, vs0, 0
 	xxpermdi	vs9, vs0, vs8, 3
 #else
-	xxpermdi    vs1, vs0, vs8, 0		
-	xxpermdi    vs9, vs8, vs0, 3     
+	xxpermdi    vs1, vs0, vs8, 0
+	xxpermdi    vs9, vs8, vs0, 3
 #endif
 	xvaddsp	vs24, vs24, vs1
 	xvaddsp	vs26, vs26, vs9
@@ -1526,9 +1587,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .macro	LOAD2x1_2O  OffsetA, OffsetB
 	lxv	vs27, (\OffsetA)(AO)
 	lxvp	vs4, (0+\OffsetB)(BO)
-	xxspltd  vs8, vs27, 1	
+	xxspltd  vs8, vs27, 1
 	xxspltd  vs24, vs27, 0
-
 	xxperm    vs10, vs8, permute_mask
 	xxperm    vs26, vs24, permute_mask
 .endm
@@ -1600,8 +1660,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxperm	vs0, vs1, save_permute_1
 #ifndef TRMMKERNEL
   /* add */
-	xxspltd vs1, vs0, 0		
-	xxspltd vs3, vs0, 1	
+	xxspltd vs1, vs0, 0
+	xxspltd vs3, vs0, 1
  /*--v4==vs36 v5==vs37---*/
 	xvaddsp	vs36, vs36, vs1
 	xvaddsp	vs37, vs37, vs3
@@ -1655,15 +1715,6 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xvf32gerpp	    1, 34, 32
 	xvf32gerpp	    2, 34, 37
 	xvf32gerpp	    3, 34, 36
-#if 0
-#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
-#else
-	xvf32gerpp	    0, 34, 32	
-	xvf32gerpp	    1, 34, 33
-	xvf32gerpp	    2, 34, 36
-	xvf32gerpp	    3, 34, 37
-#endif
-#endif
 .endm
 
 .macro	LOAD1x8_2
@@ -1682,6 +1733,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxpermdi        vs35, vs34, vs42, 2
 	xxpermdi        vs34, vs34, vs42, 0
 #endif
+
 	lxvp	vs38, (64+\OffsetA)(AO)
 	lxvp	vs40, (64+32+\OffsetA)(AO)
 .endm
@@ -1707,49 +1759,26 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .endif
 	xvf32gerpp	    2, 34, 37
 	xvf32gerpp	    3, 34, 36
-#if 0
-#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
-#else
-	xvf32gerpp	    2, 34, 36	
-	xvf32gerpp	    3, 34, 37
-#endif
-#endif	/* #if 0 */
 
 .if \Complete==0
 	lxvp	vs36, DISP16(\Index, 32+\OffsetA)(\AREG)
 .endif
 	xvf32gerpp	    0, 35, 39
 	xvf32gerpp	    1, 35, 38
-#if 0
-#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
-#else
-    xvf32gerpp      0, 35, 38
-    xvf32gerpp      1, 35, 39
-#endif
-#endif	/* #if 0 */
 .if \Complete==0
 	lxvp	vs38, DISP16(\Index, 64+\OffsetA)(\AREG)
 .endif
 	xvf32gerpp	    2, 35, 41
 	xvf32gerpp	    3, 35, 40
-#if 0
-#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
-#else
-    xvf32gerpp      2, 35, 40	
-    xvf32gerpp      3, 35, 41
-#endif
-#endif  /* #if 0 */
 .if \Complete==0
 	lxv	vs34, DISP2(\Index, \OffsetB)(\BREG)
+#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxpermdi        vs35, vs34, vs42, 0
 	xxpermdi        vs34, vs34, vs42, 2
-#if 0
-#if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 #else
-	xxpermdi        vs35, vs34, vs42, 2	
+	xxpermdi        vs35, vs34, vs42, 2
 	xxpermdi        vs34, vs34, vs42, 0
 #endif
-#endif	/* #if 0 */
 	lxvp	vs40, DISP16(\Index, 64+32+\OffsetA)(\AREG)
 .endif
 .if \IsLast==1
@@ -1821,10 +1850,10 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxperm	vs4, vs5, vs28
 	xxperm	vs6, vs7, vs28
 #else
-	xxperm	vs0, vs1, save_permute_1            
-	xxperm	vs2, vs3, save_permute_1           
-	xxperm	vs4, vs5, save_permute_1          
-	xxperm	vs6, vs7, save_permute_1         
+	xxperm	vs0, vs1, save_permute_1
+	xxperm	vs2, vs3, save_permute_1
+	xxperm	vs4, vs5, save_permute_1
+	xxperm	vs6, vs7, save_permute_1
 #endif
 #ifndef TRMMKERNEL
   /* add */
@@ -1877,8 +1906,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .if \OffsetA != 0
 	addi  \AREG, \AREG, \OffsetA
 .endif
-	xvf32gerpp	    0, 34, 33		
-	xvf32gerpp	    1, 34, 32	
+	xvf32gerpp	    0, 34, 33
+	xvf32gerpp	    1, 34, 32
 .endm
 
 .macro	LOAD1x4_2
@@ -1893,8 +1922,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxpermdi        vs35, vs34, vs38, 0
 	xxpermdi        vs34, vs34, vs38, 2
 #else
-	xxpermdi        vs35, vs34, vs38, 2			
-	xxpermdi        vs34, vs34, vs38, 0			
+	xxpermdi        vs35, vs34, vs38, 2
+	xxpermdi        vs34, vs34, vs38, 0
 #endif
 	lxvp	vs36, (32+\OffsetA)(AO)
 .endm
@@ -1913,21 +1942,21 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .endm
 
 .macro	KERNEL1x4_2  AREG, BREG, OffsetA, OffsetB, Index, IsLast, Complete
-	xvf32gerpp	    0, 34, 33	
+	xvf32gerpp	    0, 34, 33
 	xvf32gerpp	    1, 34, 32
 .if \Complete==0
 	lxvp	vs32, DISP8(\Index, 0+\OffsetA)(\AREG)
 .endif
-	xvf32gerpp	    0, 35, 37	
+	xvf32gerpp	    0, 35, 37
 	xvf32gerpp	    1, 35, 36
 .if \Complete==0
 	lxv	vs34, DISP2(\Index, \OffsetB)(\BREG)
 #if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxpermdi        vs35, vs34, vs38, 0
 	xxpermdi        vs34, vs34, vs38, 2
-#else /* #if defined(POWER10) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
-	xxpermdi        vs35, vs34, vs38, 2		
-	xxpermdi        vs34, vs34, vs38, 0	
+#else
+	xxpermdi        vs35, vs34, vs38, 2
+	xxpermdi        vs34, vs34, vs38, 0
 #endif
 	lxvp	vs36, DISP8(\Index, 32+\OffsetA)(\AREG)
 .endif
@@ -1977,8 +2006,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	xxperm	vs0, vs1, vs28
 	xxperm	vs2, vs3, vs28
 #else
-    xxperm  vs0, vs1, save_permute_1			
-    xxperm  vs2, vs3, save_permute_1		
+    xxperm  vs0, vs1, save_permute_1
+    xxperm  vs2, vs3, save_permute_1
 #endif
 #ifndef TRMMKERNEL
   /* add */
@@ -2110,7 +2139,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if defined(POWER10) && (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 	xxperm	vs0, vs1, vs28
 #else
-	xxperm  vs0, vs1, save_permute_1		
+	xxperm  vs0, vs1, save_permute_1
 #endif
 
 #ifndef TRMMKERNEL
@@ -2227,7 +2256,6 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	MULT_APLHA_PART2    vs32, vs40, vs37, vs1
 /* reconstruct r, i pairs*/
 	xxperm	vs37, vs1, vs28
-#	HARI hari kavana code change      xxperm vs1, vs37, vs28
 #ifndef TRMMKERNEL
   /* add */
 	xvaddsp	vs36, vs36, vs37

@@ -84,28 +84,9 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else 	/* #if defined(POWER10) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
 .set    perm_const1, 0x0405060700010203
 .set    perm_const2, 0x0c0d0e0f08090a0b
-#if 0
-HARI HALF PROVED 
-.set save_permute_12, 0x0c0d0e0f1c1d1e1f   	/* Answer swapped */
-.set save_permute_11, 0x0405060714151617	/* Answer swapped */
+.set save_permute_12, 0x1011121300010203
+.set save_permute_11, 0x18191a1b08090a0b
 #endif
-#if 0
-.set save_permute_12, 0x1c1d1e1f0c0d0e0f  /* HARI excellent code compared to "HARI HALF PROVED" */
-.set save_permute_11, 0x1415161704050607  /* HARI excellent code compared to "HARI HALF PROVED" */
-
-.set save_permute_12, 0x18191a1b08090a0b /* HARI hari_test_cblas_cgemm_small passed but others failing Fail : 3973 */
-.set save_permute_11, 0x1011121300010203 /* HARI hari_test_cblas_cgemm_small passed but others failing */
-#endif
-#if 0
-HARI GOOD CODE 
-.set save_permute_12, 0x1011121300010203 /* HARI hari_test_cblas_cgemm_small passed but others failing */
-.set save_permute_11, 0x18191a1b08090a0b /* HARI hari_test_cblas_cgemm_small passed but others failing */
-#endif
-
-.set save_permute_12, 0x1011121300010203 /* HARI hari_test_cblas_cgemm_small passed but others failing */
-.set save_permute_11, 0x18191a1b08090a0b /* HARI hari_test_cblas_cgemm_small passed but others failing */
-#endif
-/* HARI NEW CODE STOP */
 
 #ifndef NEEDPARAM
 
@@ -235,16 +216,8 @@ HARI GOOD CODE
   xvnegsp alpha_i,alpha_i
 #endif
 
-#if 0
-	HARI Original code 
-	mtvsrdd permute_mask,T2,T1
-	mtvsrdd save_permute_1,T3,T4 	
-#endif
-
-	/* HARI NEW CODE START */
 	mtvsrdd permute_mask,T2,T1
 	mtvsrdd save_permute_1,T3,T4
-	/* HARI NEW CODE STOP */
 
     /*mask is reverse permute so we have to make it inner permute */
 	xxpermdi	permute_mask,	permute_mask,	permute_mask,2
