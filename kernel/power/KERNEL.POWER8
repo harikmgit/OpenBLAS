@@ -44,12 +44,15 @@ else
 #CGEMM_BETA = ../generic/zgemm_beta.c
 #ZGEMM_BETA = ../generic/zgemm_beta.c
 
-STRMMKERNEL	= strmm_kernel_16x8_power8.S
-DTRMMKERNEL	= dtrmm_kernel_16x4_power8.S
+#STRMMKERNEL	= strmm_kernel_16x8_power8.S
+STRMMKERNEL	= sgemm_kernel_power10.c
+#DTRMMKERNEL	= dtrmm_kernel_16x4_power8.S
+DTRMMKERNEL		= dgemm_kernel_power10.c
 CTRMMKERNEL	= ctrmm_kernel_8x4_power8.S
 ZTRMMKERNEL	= ztrmm_kernel_8x2_power8.S
 
-SGEMMKERNEL    =  sgemm_kernel_16x8_power8.S
+#SGEMMKERNEL    =  sgemm_kernel_16x8_power8.S
+SGEMMKERNEL	    =  sgemm_kernel_power10.c
 SGEMMINCOPY    = ../generic/gemm_ncopy_16.c
 SGEMMITCOPY    = sgemm_tcopy_16_power8.S
 SGEMMONCOPY    =  ../generic/gemm_ncopy_8.c
@@ -60,6 +63,7 @@ SGEMMONCOPYOBJ =  sgemm_oncopy$(TSUFFIX).$(SUFFIX)
 SGEMMOTCOPYOBJ =  sgemm_otcopy$(TSUFFIX).$(SUFFIX)
 
 DGEMMKERNEL    =  dgemm_kernel_16x4_power8.S
+#DGEMMKERNEL		= dgemm_kernel_power10.c
 DGEMMINCOPY    = ../generic/gemm_ncopy_16.c
 DGEMMITCOPY    =  dgemm_tcopy_16_power8.S
 DGEMMONCOPY    =  dgemm_ncopy_4_power8.S

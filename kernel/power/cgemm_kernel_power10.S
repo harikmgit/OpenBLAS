@@ -81,7 +81,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .equ    perm_const2, 0x0c0d0e0f08090a0b
 .equ save_permute_12, 0x0c0d0e0f1c1d1e1f
 .equ save_permute_11, 0x0405060714151617
-#else 	/* #if defined(POWER10) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) */
+#else
 .set    perm_const1, 0x0405060700010203
 .set    perm_const2, 0x0c0d0e0f08090a0b
 .set save_permute_12, 0x1011121300010203
